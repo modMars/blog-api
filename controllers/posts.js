@@ -5,9 +5,9 @@ const passport = require('passport');
 exports.posts_create = [
 	passport.authenticate('jwt', { session: false }),
 	async (req, res) => {
-		const { title, body, slug } = req.body;
+		const { title, body, slug, is_published, published_at, date_of_creation } = req.body;
 		const blog_post =
-			await sql`INSERT INTO blogpost (title, body, slug) VALUES (${title}, ${body}, ${slug}) RETURNING *`;
+			await sql`INSERT INTO blogpost (title, body, slug, is_published, published_at, date_of_creation) VALUES (${title}, ${body}, ${slug}, ${is_published}, ${published_at}, ${date_of_creation} ) RETURNING *`;
 		console.log('Blog post created successfully.');
 		return res.status(200).json(blog_post);
 	},
@@ -88,9 +88,10 @@ exports.posts_get_one_comment = async (req, res, next) => {
 
 exports.posts_update = async (req, res, next) => {
 	try {
-		const { title, body, slug } = req.body;
+		const { title, body, slug, published_at } = req.body;
 		console.log(title, body, slug);
-		const post = await sql`UPDATE blogpost SET title = ${title}, body = ${body} WHERE slug = ${slug} RETURNING *;`;
+		const post =
+			await sql`UPDATE blogpost SET title = ${title}, body = ${body}, published_at = ${published_at} WHERE slug = ${slug} RETURNING *;`;
 		return res.status(200).json(post);
 	} catch (err) {
 		return res.status(404).json({ message: 'Blog post not found.' });
@@ -99,8 +100,9 @@ exports.posts_update = async (req, res, next) => {
 
 exports.posts_toggle_publish = async (req, res, next) => {
 	try {
-		const { slug, is_published } = req.body;
-		const post = await sql`UPDATE blogpost SET is_published = ${is_published} WHERE slug = ${slug} RETURNING *;`;
+		const { slug, is_published, published_at } = req.body;
+		const post =
+			await sql`UPDATE blogpost SET is_published = ${is_published}, published_at = ${published_at} WHERE slug = ${slug} RETURNING *;`;
 		return res.status(200).json(post);
 	} catch (err) {
 		return res.status(404).json({ message: 'Blog post not found.', error: err.message });
