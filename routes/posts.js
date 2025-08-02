@@ -14,8 +14,12 @@ router.post('/:id/comments', postsController.posts_create_comment);
 router.post('/', postsController.posts_create);
 
 //PUT
-router.put('/:id', postsController.posts_update);
+router.put('/:slug', postsController.posts_update);
 router.put('/:id/comments/:commentId', postsController.posts_update_comment);
+
+//PATCH
+router.patch('/:slug/publish', postsController.posts_toggle_publish);
+// router.patch('/:id/comments/:commentId', postsController.posts_toggle_comment);
 
 //DELETE
 router.delete('/:id', postsController.posts_delete);

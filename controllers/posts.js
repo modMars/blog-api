@@ -88,14 +88,22 @@ exports.posts_get_one_comment = async (req, res, next) => {
 
 exports.posts_update = async (req, res, next) => {
 	try {
-		const { id } = req.params;
-		const post = await BlogPost.findById(id);
-		post.title = req.body.title;
-		post.body = req.body.body;
-		const result = post.save();
+		const { title, body, slug } = req.body;
+		console.log(title, body, slug);
+		const post = await sql`UPDATE blogpost SET title = ${title}, body = ${body} WHERE slug = ${slug} RETURNING *;`;
 		return res.status(200).json(post);
 	} catch (err) {
 		return res.status(404).json({ message: 'Blog post not found.' });
+	}
+};
+
+exports.posts_toggle_publish = async (req, res, next) => {
+	try {
+		const { slug, is_published } = req.body;
+		const post = await sql`UPDATE blogpost SET is_published = ${is_published} WHERE slug = ${slug} RETURNING *;`;
+		return res.status(200).json(post);
+	} catch (err) {
+		return res.status(404).json({ message: 'Blog post not found.', error: err.message });
 	}
 };
 
